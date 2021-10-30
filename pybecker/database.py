@@ -5,8 +5,6 @@ import sqlite3
 from random import randrange
 from .becker_helper import hex4
 
-NUMBER_FILE = "centronic-stick.num"
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -29,23 +27,6 @@ class Database:
         check_table = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='unit'")
         if check_table.fetchone() is None:
             self.create()
-            self.migrate()
-
-    def migrate(self):
-        try:
-            # migrate the previous *.num file into its sqllite database
-            self.old_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), NUMBER_FILE)
-            if os.path.isfile(self.old_file):
-                _LOGGER.info('Migrate previous *.num file...')
-                with open(self.old_file, "r") as file:
-                    number = int(file.read())
-                    c = self.conn.cursor()
-                    c.execute("UPDATE unit SET increment = ?, configured = ? WHERE code = ?", (number, 1, '1737b',))
-                    self.conn.commit()
-                    os.remove(self.old_file)
-        except (sqlite3.Error, OSError):
-            _LOGGER.error('Migration failed')
-            self.conn.rollback()
 
     def init_dummy(self):
         try:
@@ -63,11 +44,11 @@ class Database:
         _LOGGER.info('Create database...')
         c = self.conn.cursor()
         c.execute('CREATE TABLE unit (code NVARCHAR(5), increment INTEGER(4), configured BIT, executed INTEGER, UNIQUE(code))')
-        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737b', 0, 0, 0,))
-        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737c', 0, 0, 0,))
-        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737d', 0, 0, 0,))
-        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737e', 0, 0, 0,))
-        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737f', 0, 0, 0,))
+        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737b', 0, 1, 0,))
+        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737c', 0, 1, 0,))
+        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737d', 0, 1, 0,))
+        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737e', 0, 1, 0,))
+        c.execute("INSERT INTO unit VALUES (?, ?, ?, ?)", ('1737f', 0, 1, 0,))
 
         self.conn.commit()
 
