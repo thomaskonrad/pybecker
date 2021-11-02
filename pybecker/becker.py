@@ -32,6 +32,7 @@ COMMAND_CLEARPOS3 = 0x92
 COMMAND_CLEARPOS4 = 0x93
 
 DEFAULT_DEVICE_NAME = '/dev/serial/by-id/usb-BECKER-ANTRIEBE_GmbH_CDC_RS232_v125_Centronic-if00'
+DEFAULT_DATABASE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'centronic-stick.db')
 
 logging.basicConfig()
 _LOGGER = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class Becker:
         Use this class to perform operations on your Becker Shutter using a centronic USB Stick
         This class will as well maintain a call increment in an internal database
     """
-    def __init__(self, device_name=DEFAULT_DEVICE_NAME, init_dummy=False):
+    def __init__(self, device_name=DEFAULT_DEVICE_NAME, init_dummy=False, database_path=DEFAULT_DATABASE_PATH):
         """
             Create a new instance of the Becker controller
 
@@ -58,7 +59,7 @@ class Becker:
         if self.is_serial and not os.path.exists(device_name):
             raise BeckerConnectionError(device_name + " is not existing")
         self.device = device_name
-        self.db = Database()
+        self.db = Database(database_path)
 
         # If no unit is defined create a dummy one
         units = self.db.get_all_units()

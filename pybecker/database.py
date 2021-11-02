@@ -10,8 +10,8 @@ _LOGGER = logging.getLogger(__name__)
 
 class Database:
 
-    def __init__(self):
-        self.filename = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'centronic-stick.db')
+    def __init__(self, database_path):
+        self.filename = database_path
         self.conn = sqlite3.connect(self.filename)
         self.check()
 
